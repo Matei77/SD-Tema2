@@ -8,7 +8,7 @@ DEPEND=main.c library_commands.c user_commands.c hashtable.c linkedlist.c exit.c
 
 build: tema2
 
-tema1: $(DEPEND)
+tema2: $(DEPEND)
 		$(CC) $(CFLAGS) $(DEPEND) -o tema2
 pack:
 		zip -FSr 313CA_IonescuMateiStefan_Tema2.zip README.md Makefile *.c *.h

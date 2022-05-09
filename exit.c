@@ -32,13 +32,13 @@ void TopBooks(hashtable_t *library)
 
 	int k = 0;
 
-	for (int i = 0; i < library->hmax; i++) {
+	for (unsigned int i = 0; i < library->hmax; i++) {
 		ll_node_t *it = library->buckets[i]->head;
 		while (it) {
 			array[k++] = ((book_t *)((info *)it->data)->value);
+			it = it->next;
 		}
 	}
-	k--;
 
 	for (int i = 0; i < k - 1; i++) {
 		for (int j = i + 1; j < k; j++) {
@@ -50,8 +50,9 @@ void TopBooks(hashtable_t *library)
 		}
 	}
 
+	printf("Books ranking:\n");
 	for (int i = 0; i < k; i++) {
-		printf("Name:%s Raiting:%f Purchases:%d\n", array[i]->bookname,
+		printf("%d. Name:%s Raiting:%.3f Purchases:%d\n", i+1, array[i]->bookname,
 			   array[i]->rating / array[i]->purchases, array[i]->purchases);
 	}
 
@@ -72,18 +73,19 @@ int CompareUsers(user_t *user1, user_t *user2)
 
 void TopUsers(hashtable_t *users) {
 
+	
 	user_t **array = malloc(users->size * sizeof(user_t *));
 
 	int k = 0;
 
-	for (int i = 0; i < users->hmax; i++) {
+	for (unsigned int i = 0; i < users->hmax; i++) {
 		ll_node_t *it = users->buckets[i]->head;
 		while (it) {
 			if (((user_t *)((info *)it->data)->value)->status != 2)
 				array[k++] = ((user_t *)((info *)it->data)->value);
+			it = it->next;
 		}
 	}
-	k--;
 
 	for (int i = 0; i < k - 1; i++) {
 		for (int j = i + 1; j < k; j++) {
@@ -95,8 +97,9 @@ void TopUsers(hashtable_t *users) {
 		}
 	}
 
+	printf("Users ranking:\n");
 	for (int i = 0; i < k; i++) {
-		printf("Name:%s Points:%d\n", array[i]->username,
+		printf("%d. Name:%s Points:%d\n", i+1, array[i]->username,
 			   array[i]->points);
 	}
 

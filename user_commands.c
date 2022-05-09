@@ -9,6 +9,8 @@
 #include "hashtable.h"
 #include "utils.h"
 
+#define USER_DEFAULT_POINTS 100
+
 void AddUser(hashtable_t *users, char *argv[]) {
 	
 	char *username = argv[0];
@@ -19,9 +21,9 @@ void AddUser(hashtable_t *users, char *argv[]) {
 	}
 
 	user_t *user = malloc(sizeof(user_t));
-	DIE (user = NULL, "user malloc");
+	DIE (user == NULL, "user malloc");
 
-	user->points = 0;
+	user->points = USER_DEFAULT_POINTS;
 	user->status = 0;
 	user->days_available = 0;
 	memcpy(user->username, username, strlen(username) + 1);
@@ -108,7 +110,7 @@ void Return(hashtable_t *users, hashtable_t *library, char *argv[]) {
 	}
 
 	if (user->days_available - days_since_borrow < 0) {
-		user->points -= 2 * (days_since_borrow - user->days_available)
+		user->points -= 2 * (days_since_borrow - user->days_available);
 	} else {
 		user->points += user->days_available - days_since_borrow;
 	}

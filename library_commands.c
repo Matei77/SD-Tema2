@@ -38,10 +38,11 @@ void AddBook(hashtable_t *library, char *argv[])
 
 	char def_key[DEF_SIZE], val_key[DEF_SIZE];
 	for (int i = 0; i < def_nr; i++) {
-		scanf("%s %s", def_key, val_key);
+		scanf(" %s %s", def_key, val_key);
 		ht_put(book->content, def_key, strlen(def_key) + 1, val_key,
 			   strlen(def_key) + 1);
 	}
+	getchar();
 
 	ht_put(library, bookname, strlen(bookname) + 1, book, sizeof(book_t));
 }
@@ -58,7 +59,7 @@ void GetBook(hashtable_t *library, char *argv[])
 
 	book_t *book = (book_t *)(ht_get(library, bookname));
 
-	printf("Name:%s Rating:%f Purachases:%d\n", bookname, book->rating,
+	printf("Name:%s Rating:%.3f Purachases:%d\n", bookname, book->rating,
 		   book->purchases);
 }
 
