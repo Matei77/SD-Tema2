@@ -3,39 +3,39 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "hashtable.h"
 #include "library_commands.h"
 #include "types.h"
+#include "hashtable.h"
 #include "utils.h"
 
 #define DEF_SIZE 21
+#define BOOKS_HMAX 10
 
+// This function adds a book to the library
 void AddBook(hashtable_t *library, char *argv[])
 {
 	char *bookname = argv[0];
 
+	// if a book with the same name allready exists remove it
 	if (ht_has_key(library, bookname)) {
 		book_t *book = (book_t *)ht_get(library, bookname);
 		ht_free(book->content);
 		ht_remove_entry(library, bookname);
 	}
 
+	// allocate memory for a new book
 	book_t *book = malloc(sizeof(book_t));
 	DIE(book == NULL, "book malloc");
 
 	book->content =
-		ht_create(10, hash_function_string, compare_function_strings);
+		ht_create(BOOKS_HMAX, hash_function_string, compare_function_strings);
 	book->rating = 0;
 	book->purchases = 0;
 	book->status = 0;
 	memcpy(book->bookname, bookname, strlen(bookname) + 1);
 
-	// transform the command's first argument string to integer
-	char *endptr;
-	int def_nr = strtol(argv[1], &endptr, 10);
-
-	// check if the provided value was not a number
-	DIE(argv[1] == endptr || *endptr != '\0', "wrong def_nr value");
+	// transform the command's second argument string to integer
+	int def_nr = strtol(argv[1], NULL, 10);
 
 	char def_key[DEF_SIZE], val_key[DEF_SIZE];
 	for (int i = 0; i < def_nr; i++) {
@@ -46,11 +46,13 @@ void AddBook(hashtable_t *library, char *argv[])
 	if (def_nr != 0)
 		getchar();
 
+	// add the book to the library
 	ht_put(library, bookname, strlen(bookname) + 1, book, sizeof(book_t));
 
 	free(book);
 }
 
+// This function shows the details of a book
 void GetBook(hashtable_t *library, char *argv[])
 {
 	char *bookname = argv[0];
@@ -60,12 +62,15 @@ void GetBook(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	// find the book
 	book_t *book = (book_t *)(ht_get(library, bookname));
 
+	// show the book details
 	float br = book->purchases == 0 ? 0 : book->rating / book->purchases;
 	printf("Name:%s Rating:%.3f Purchases:%d\n", bookname, br, book->purchases);
 }
 
+// This function removes a book from the library
 void RmvBook(hashtable_t *library, char *argv[])
 {
 	char *bookname = argv[0];
@@ -75,11 +80,13 @@ void RmvBook(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	// delete the book content and the book
 	book_t *book = (book_t *)ht_get(library, bookname);
 	ht_free(book->content);
 	ht_remove_entry(library, bookname);
 }
 
+// This function adds a definition to a book
 void AddDef(hashtable_t *library, char *argv[])
 {
 	char *bookname = argv[0];
@@ -89,17 +96,17 @@ void AddDef(hashtable_t *library, char *argv[])
 		return;
 	}
 
-	// ? char *def_key = argv[1], *val_key = argv[2];
+	char *def_key = argv[1], *val_key = argv[2];
 
+	// get the book
 	book_t *book = (book_t *)ht_get(library, bookname);
 
-	// ht_put(book->content, def_key, strlen(def_key) + 1, val_key,
-	// 	   strlen(val_key) + 1);
-
-	ht_put(book->content, argv[1], strlen(argv[1]) + 1, argv[2],
-		   strlen(argv[2]) + 1);
+	// add the definition in the book
+	ht_put(book->content, def_key, strlen(def_key) + 1, val_key,
+	 	   strlen(val_key) + 1);
 }
 
+// This function gets a definition from a book
 void GetDef(hashtable_t *library, char *argv[])
 {
 	char *bookname = argv[0];
@@ -109,6 +116,7 @@ void GetDef(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	// find the book
 	book_t *book = (book_t *)(ht_get(library, bookname));
 
 	char *def_key = argv[1];
@@ -117,11 +125,14 @@ void GetDef(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	// get the definition
 	char *val_key = (char *)ht_get(book->content, def_key);
 
+	// print the definition
 	printf("%s\n", val_key);
 }
 
+// This function removes a definition from a book
 void RmvDef(hashtable_t *library, char *argv[])
 {
 	char *bookname = argv[0];
@@ -131,6 +142,7 @@ void RmvDef(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	// find the book
 	book_t *book = (book_t *)(ht_get(library, bookname));
 
 	char *def_key = argv[1];
@@ -139,5 +151,6 @@ void RmvDef(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	// remove the definition
 	ht_remove_entry(book->content, def_key);
 }

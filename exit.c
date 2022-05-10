@@ -7,6 +7,7 @@
 #include "hashtable.h"
 #include "types.h"
 
+// This function returns 1 if the first book has a higher rating or 2 otherwise
 int CompareBook(book_t *book1, book_t *book2)
 {
 	float b1_rt = book1->purchases == 0 ? 0 : book1->rating / book1->purchases;
@@ -27,12 +28,14 @@ int CompareBook(book_t *book1, book_t *book2)
 	}
 }
 
+// This function shows the books ranking
 void TopBooks(hashtable_t *library)
 {
 	book_t **array = malloc(library->size * sizeof(book_t *));
 
 	int k = 0;
 
+	// add book to array
 	for (unsigned int i = 0; i < library->hmax; i++) {
 		ll_node_t *it = library->buckets[i]->head;
 		while (it) {
@@ -41,6 +44,7 @@ void TopBooks(hashtable_t *library)
 		}
 	}
 
+	// sort array of books
 	for (int i = 0; i < k - 1; i++) {
 		for (int j = i + 1; j < k; j++) {
 			if (CompareBook(array[i], array[j]) == 2) {
@@ -51,6 +55,7 @@ void TopBooks(hashtable_t *library)
 		}
 	}
 
+	// show ranking
 	printf("Books ranking:\n");
 	for (int i = 0; i < k; i++) {
 		float br = array[i]->purchases == 0
@@ -63,6 +68,7 @@ void TopBooks(hashtable_t *library)
 	free(array);
 }
 
+// This function returns 1 if the first user has more points or 2 otherwise
 int CompareUsers(user_t *user1, user_t *user2)
 {
 	if (user1->points > user2->points) {
@@ -76,12 +82,14 @@ int CompareUsers(user_t *user1, user_t *user2)
 	}
 }
 
+// This function shows the users ranking
 void TopUsers(hashtable_t *users)
 {
 	user_t **array = malloc(users->size * sizeof(user_t *));
 
 	int k = 0;
 
+	// add users to array
 	for (unsigned int i = 0; i < users->hmax; i++) {
 		ll_node_t *it = users->buckets[i]->head;
 		while (it) {
@@ -91,6 +99,7 @@ void TopUsers(hashtable_t *users)
 		}
 	}
 
+	// sort array of users
 	for (int i = 0; i < k - 1; i++) {
 		for (int j = i + 1; j < k; j++) {
 			if (CompareUsers(array[i], array[j]) == 2) {
@@ -101,6 +110,7 @@ void TopUsers(hashtable_t *users)
 		}
 	}
 
+	// show ranking
 	printf("Users ranking:\n");
 	for (int i = 0; i < k; i++) {
 		printf("%d. Name:%s Points:%d\n", i + 1, array[i]->username,
@@ -110,11 +120,14 @@ void TopUsers(hashtable_t *users)
 	free(array);
 }
 
+// This function shows the rankings of books and users and frees the memory
+// allocated by the program
 void Exit(hashtable_t *users, hashtable_t *library)
 {
 	TopBooks(library);
 	TopUsers(users);
 
+	// free the content of each book
 	for (unsigned int i = 0; i < library->hmax; i++) {
 		ll_node_t *it = library->buckets[i]->head;
 		while (it) {

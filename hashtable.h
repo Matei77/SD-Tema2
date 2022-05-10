@@ -30,4 +30,6 @@ unsigned int ht_get_size(hashtable_t *ht);
 
 unsigned int ht_get_hmax(hashtable_t *ht);
 
+void ht_check_and_resize(hashtable_t *ht);
+
 #endif  // HASHTABLE_H_

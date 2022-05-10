@@ -7,6 +7,7 @@
 #include "types.h"
 #include "utils.h"
 
+// This function creates a new linked list and returns it
 linked_list_t *ll_create(unsigned int data_size)
 {
 	linked_list_t *ll;
@@ -21,13 +22,7 @@ linked_list_t *ll_create(unsigned int data_size)
 	return ll;
 }
 
-/*
- * Pe baza datelor trimise prin pointerul new_data, se creeaza un nou nod care e
- * adaugat pe pozitia n a listei reprezentata de pointerul list. Pozitiile din
- * lista sunt indexate incepand cu 0 (i.e. primul nod din lista se afla pe
- * pozitia n=0). Daca n >= nr_noduri, noul nod se adauga la finalul listei. Daca
- * n < 0, eroare.
- */
+// This function adds a new node to a linked list at position n
 void ll_add_nth_node(linked_list_t *list, unsigned int n, const void *new_data)
 {
 	ll_node_t *prev, *curr;
@@ -37,7 +32,6 @@ void ll_add_nth_node(linked_list_t *list, unsigned int n, const void *new_data)
 		return;
 	}
 
-	/* n >= list->size inseamna adaugarea unui nou nod la finalul listei. */
 	if (n > list->size) {
 		n = list->size;
 	}
@@ -58,7 +52,6 @@ void ll_add_nth_node(linked_list_t *list, unsigned int n, const void *new_data)
 
 	new_node->next = curr;
 	if (prev == NULL) {
-		/* Adica n == 0. */
 		list->head = new_node;
 	} else {
 		prev->next = new_node;
@@ -66,14 +59,7 @@ void ll_add_nth_node(linked_list_t *list, unsigned int n, const void *new_data)
 	list->size++;
 }
 
-/*
- * Elimina nodul de pe pozitia n din lista al carei pointer este trimis ca
- * parametru. Pozitiile din lista se indexeaza de la 0 (i.e. primul nod din
- * lista se afla pe pozitia n=0). Daca n >= nr_noduri - 1, se elimina nodul de
- * la finalul listei. Daca n < 0, eroare. Functia intoarce un pointer spre acest
- * nod proaspat eliminat din lista. Este responsabilitatea apelantului sa
- * elibereze memoria acestui nod.
- */
+// this function removes the nth node from a linked list
 ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n)
 {
 	ll_node_t *prev, *curr;
@@ -82,7 +68,6 @@ ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n)
 		return NULL;
 	}
 
-	/* n >= list->size - 1 inseamna eliminarea nodului de la finalul listei. */
 	if (n > list->size - 1) {
 		n = list->size - 1;
 	}
@@ -96,7 +81,6 @@ ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n)
 	}
 
 	if (prev == NULL) {
-		/* Adica n == 0. */
 		list->head = curr->next;
 	} else {
 		prev->next = curr->next;
@@ -107,10 +91,7 @@ ll_node_t *ll_remove_nth_node(linked_list_t *list, unsigned int n)
 	return curr;
 }
 
-/*
- * Functia intoarce numarul de noduri din lista al carei pointer este trimis ca
- * parametru.
- */
+// This function return the size of a list
 unsigned int ll_get_size(linked_list_t *list)
 {
 	if (!list) {
@@ -120,12 +101,7 @@ unsigned int ll_get_size(linked_list_t *list)
 	return list->size;
 }
 
-/*
- * Procedura elibereaza memoria folosita de toate nodurile din lista, iar la
- * sfarsit, elibereaza memoria folosita de structura lista si actualizeaza la
- * NULL valoarea pointerului la care pointeaza argumentul (argumentul este un
- * pointer la un pointer).
- */
+// This function frees a linked list
 void ll_free(linked_list_t **pp_list)
 {
 	ll_node_t *currNode;
@@ -144,48 +120,4 @@ void ll_free(linked_list_t **pp_list)
 
 	free(*pp_list);
 	*pp_list = NULL;
-}
-
-/*
- * Atentie! Aceasta functie poate fi apelata doar pe liste ale caror noduri STIM
- * ca stocheaza int-uri. Functia afiseaza toate valorile int stocate in nodurile
- * din lista inlantuita separate printr-un spatiu.
- */
-void ll_print_int(linked_list_t *list)
-{
-	ll_node_t *curr;
-
-	if (!list) {
-		return;
-	}
-
-	curr = list->head;
-	while (curr != NULL) {
-		printf("%d ", *((int *)curr->data));
-		curr = curr->next;
-	}
-
-	printf("\n");
-}
-
-/*
- * Atentie! Aceasta functie poate fi apelata doar pe liste ale caror noduri STIM
- * ca stocheaza string-uri. Functia afiseaza toate string-urile stocate in
- * nodurile din lista inlantuita, separate printr-un spatiu.
- */
-void ll_print_string(linked_list_t *list)
-{
-	ll_node_t *curr;
-
-	if (!list) {
-		return;
-	}
-
-	curr = list->head;
-	while (curr != NULL) {
-		printf("%s ", (char *)curr->data);
-		curr = curr->next;
-	}
-
-	printf("\n");
 }

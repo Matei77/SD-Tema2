@@ -14,13 +14,4 @@ unsigned int ll_get_size(linked_list_t *list);
 
 void ll_free(linked_list_t **pp_list);
 
-// ? Maybe useless
-void ll_print_int(linked_list_t *list);
-
-// ? Maybe useless
-void ll_print_string(linked_list_t *list);
-
-// ? NOT IMPLEMENTED. Maybe should be
-// ll_node_t *get_nth_node(linked_list_t *list, unsigned int n);
-
 #endif  // LINKEDLIST_H_

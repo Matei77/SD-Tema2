@@ -24,13 +24,10 @@ struct info {
 
 typedef struct hashtable_t hashtable_t;
 struct hashtable_t {
-	linked_list_t **buckets; /* Array de liste simplu-inlantuite. */
-	/* Nr. total de noduri existente curent in toate bucket-urile. */
-	unsigned int size;
-	unsigned int hmax; /* Nr. de bucket-uri. */
-	/* (Pointer la) Functie pentru a calcula valoarea hash asociata cheilor. */
+	linked_list_t **buckets;
+	unsigned int size;  // total number of elements
+	unsigned int hmax;  // number of buckets
 	unsigned int (*hash_function)(void *);
-	/* (Pointer la) Functie pentru a compara doua chei. */
 	int (*compare_function)(void *, void *);
 };
 
@@ -44,7 +41,7 @@ typedef struct book_t {
 
 typedef struct user_t {
 	int points;
-	int status;  // 0 - book not borrowed, 1 - book borrowed, 2 - banned
+	int status;  // 0 - book not borrowed, 1 - book borrowed, 2 - user banned
 	int days_available;
 	char username[USERNAME_LEN];
 	char borrowed_book[BOOKNAME_LEN];

@@ -10,6 +10,7 @@
 #include "user_commands.h"
 
 #define COMMAND_LEN 256
+#define START_HMAX 10
 #define MAX_ARG_COUNT 10
 
 void ParseCommand(char *command_line, char **command, char *argv[]);
@@ -17,19 +18,14 @@ void ParseCommand(char *command_line, char **command, char *argv[]);
 int main(void)
 {
 	hashtable_t *library =
-		ht_create(10, hash_function_string, compare_function_strings);
+		ht_create(START_HMAX, hash_function_string, compare_function_strings);
 	hashtable_t *users =
-		ht_create(10, hash_function_string, compare_function_strings);
+		ht_create(START_HMAX, hash_function_string, compare_function_strings);
 
 	char command_line[COMMAND_LEN], *command = NULL, *argv[MAX_ARG_COUNT];
 
 	while (1) {
 		ParseCommand(command_line, &command, argv);
-
-		// !  printf("Command: %s\n", command);
-		//  	for (int i = 0; i < 4; i++) {
-		//  	printf("\targ %i: %s\n", i, argv[i]);
-		//   }
 
 		if (command != NULL) {
 			if (strcmp(command, "ADD_BOOK") == 0) {
@@ -55,10 +51,10 @@ int main(void)
 			} else if (strcmp(command, "EXIT") == 0) {
 				Exit(users, library);
 				return 0;
-			} else {
-				printf("Invalid command. Please try again.\n");
 			}
 		}
+		ht_check_and_resize(library);
+		ht_check_and_resize(users);
 	}
 }
 
@@ -67,8 +63,6 @@ int main(void)
 void ParseCommand(char *command_line, char **command, char *argv[])
 {
 	fgets(command_line, COMMAND_LEN - 1, stdin);
-
-	//! printf("Command line:%s.\n", command_line);
 
 	*command = command_line;
 	int argc = 0;
