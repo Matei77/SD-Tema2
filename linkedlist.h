@@ -1,5 +1,6 @@
-#ifndef LINKED_LIST_H_
-#define LINKED_LIST_H_
+// Copyright Ionescu Matei-Stefan - 313CAb - 2021-2022
+#ifndef LINKEDLIST_H_
+#define LINKEDLIST_H_
 
 #include "types.h"
 
@@ -22,4 +23,4 @@ void ll_print_string(linked_list_t *list);
 // ? NOT IMPLEMENTED. Maybe should be
 // ll_node_t *get_nth_node(linked_list_t *list, unsigned int n);
 
-#endif  // LINKED_LIST_H_
+#endif  // LINKEDLIST_H_

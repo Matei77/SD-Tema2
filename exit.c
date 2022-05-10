@@ -9,8 +9,9 @@
 
 int CompareBook(book_t *book1, book_t *book2)
 {
-	float b1_rt = book1->rating / book1->purchases;
-	float b2_rt = book1->rating / book2->purchases;
+	float b1_rt = book1->purchases == 0 ? 0 : book1->rating / book1->purchases;
+	float b2_rt = book2->purchases == 0 ? 0 : book2->rating / book2->purchases;
+
 	if (b1_rt > b2_rt) {
 		return 1;
 	} else if (b1_rt < b2_rt) {
@@ -21,13 +22,13 @@ int CompareBook(book_t *book1, book_t *book2)
 		return 2;
 	} else if (strcmp(book1->bookname, book2->bookname) < 0) {
 		return 1;
-	} else
+	} else {
 		return 2;
+	}
 }
 
 void TopBooks(hashtable_t *library)
 {
-
 	book_t **array = malloc(library->size * sizeof(book_t *));
 
 	int k = 0;
@@ -52,8 +53,11 @@ void TopBooks(hashtable_t *library)
 
 	printf("Books ranking:\n");
 	for (int i = 0; i < k; i++) {
-		printf("%d. Name:%s Raiting:%.3f Purchases:%d\n", i+1, array[i]->bookname,
-			   array[i]->rating / array[i]->purchases, array[i]->purchases);
+		float br = array[i]->purchases == 0
+			? 0
+			: array[i]->rating / array[i]->purchases;
+		printf("%d. Name:%s Rating:%.3f Purchases:%d\n", i + 1,
+			   array[i]->bookname, br, array[i]->purchases);
 	}
 
 	free(array);
@@ -67,13 +71,13 @@ int CompareUsers(user_t *user1, user_t *user2)
 		return 2;
 	} else if (strcmp(user1->username, user2->username) < 0) {
 		return 1;
-	} else
+	} else {
 		return 2;
+	}
 }
 
-void TopUsers(hashtable_t *users) {
-
-	
+void TopUsers(hashtable_t *users)
+{
 	user_t **array = malloc(users->size * sizeof(user_t *));
 
 	int k = 0;
@@ -99,7 +103,7 @@ void TopUsers(hashtable_t *users) {
 
 	printf("Users ranking:\n");
 	for (int i = 0; i < k; i++) {
-		printf("%d. Name:%s Points:%d\n", i+1, array[i]->username,
+		printf("%d. Name:%s Points:%d\n", i + 1, array[i]->username,
 			   array[i]->points);
 	}
 
@@ -111,6 +115,13 @@ void Exit(hashtable_t *users, hashtable_t *library)
 	TopBooks(library);
 	TopUsers(users);
 
+	for (unsigned int i = 0; i < library->hmax; i++) {
+		ll_node_t *it = library->buckets[i]->head;
+		while (it) {
+			ht_free(((book_t *)((info *)it->data)->value)->content);
+			it = it->next;
+		}
+	}
 	ht_free(library);
 	ht_free(users);
 }

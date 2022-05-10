@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "library_commands.h"
 #include "hashtable.h"
+#include "library_commands.h"
 #include "types.h"
 #include "utils.h"
 
@@ -12,10 +12,11 @@
 
 void AddBook(hashtable_t *library, char *argv[])
 {
-
 	char *bookname = argv[0];
 
 	if (ht_has_key(library, bookname)) {
+		book_t *book = (book_t *)ht_get(library, bookname);
+		ht_free(book->content);
 		ht_remove_entry(library, bookname);
 	}
 
@@ -38,18 +39,20 @@ void AddBook(hashtable_t *library, char *argv[])
 
 	char def_key[DEF_SIZE], val_key[DEF_SIZE];
 	for (int i = 0; i < def_nr; i++) {
-		scanf(" %s %s", def_key, val_key);
+		scanf("%s %s", def_key, val_key);
 		ht_put(book->content, def_key, strlen(def_key) + 1, val_key,
-			   strlen(def_key) + 1);
+			   strlen(val_key) + 1);
 	}
-	getchar();
+	if (def_nr != 0)
+		getchar();
 
 	ht_put(library, bookname, strlen(bookname) + 1, book, sizeof(book_t));
+
+	free(book);
 }
 
 void GetBook(hashtable_t *library, char *argv[])
 {
-
 	char *bookname = argv[0];
 
 	if (!ht_has_key(library, bookname)) {
@@ -59,13 +62,12 @@ void GetBook(hashtable_t *library, char *argv[])
 
 	book_t *book = (book_t *)(ht_get(library, bookname));
 
-	printf("Name:%s Rating:%.3f Purachases:%d\n", bookname, book->rating,
-		   book->purchases);
+	float br = book->purchases == 0 ? 0 : book->rating / book->purchases;
+	printf("Name:%s Rating:%.3f Purchases:%d\n", bookname, br, book->purchases);
 }
 
 void RmvBook(hashtable_t *library, char *argv[])
 {
-
 	char *bookname = argv[0];
 
 	if (!ht_has_key(library, bookname)) {
@@ -73,12 +75,13 @@ void RmvBook(hashtable_t *library, char *argv[])
 		return;
 	}
 
+	book_t *book = (book_t *)ht_get(library, bookname);
+	ht_free(book->content);
 	ht_remove_entry(library, bookname);
 }
 
 void AddDef(hashtable_t *library, char *argv[])
 {
-
 	char *bookname = argv[0];
 
 	if (!ht_has_key(library, bookname)) {
@@ -86,17 +89,19 @@ void AddDef(hashtable_t *library, char *argv[])
 		return;
 	}
 
-	char *def_key = argv[1], *val_key = argv[2];
+	// ? char *def_key = argv[1], *val_key = argv[2];
 
 	book_t *book = (book_t *)ht_get(library, bookname);
 
-	ht_put(book->content, def_key, strlen(def_key) + 1, val_key,
-		   strlen(val_key) + 1);
+	// ht_put(book->content, def_key, strlen(def_key) + 1, val_key,
+	// 	   strlen(val_key) + 1);
+
+	ht_put(book->content, argv[1], strlen(argv[1]) + 1, argv[2],
+		   strlen(argv[2]) + 1);
 }
 
 void GetDef(hashtable_t *library, char *argv[])
 {
-
 	char *bookname = argv[0];
 
 	if (!ht_has_key(library, bookname)) {

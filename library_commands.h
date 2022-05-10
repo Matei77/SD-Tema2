@@ -14,6 +14,6 @@ void AddDef(hashtable_t *library, char *argv[]);
 
 void GetDef(hashtable_t *library, char *argv[]);
 
-void RmvDef (hashtable_t *library, char *argv[]);
+void RmvDef(hashtable_t *library, char *argv[]);
 
 #endif  // LIBRARY_COMMANDS_H_

@@ -38,13 +38,13 @@ typedef struct book_t {
 	hashtable_t *content;
 	float rating;
 	int purchases;
-	int status; // 0 - book not borrowed, 1 - book borrowed
-	int bookname[BOOKNAME_LEN];
+	int status;  // 0 - book not borrowed, 1 - book borrowed
+	char bookname[BOOKNAME_LEN];
 } book_t;
 
 typedef struct user_t {
 	int points;
-	int status; // 0 - book not borrowed, 1 - book borrowed, 2 - banned
+	int status;  // 0 - book not borrowed, 1 - book borrowed, 2 - banned
 	int days_available;
 	char username[USERNAME_LEN];
 	char borrowed_book[BOOKNAME_LEN];

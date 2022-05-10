@@ -3,16 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "user_commands.h"
+#include "hashtable.h"
 #include "library_commands.h"
 #include "types.h"
-#include "hashtable.h"
+#include "user_commands.h"
 #include "utils.h"
 
 #define USER_DEFAULT_POINTS 100
 
-void AddUser(hashtable_t *users, char *argv[]) {
-	
+void AddUser(hashtable_t *users, char *argv[])
+{
 	char *username = argv[0];
 
 	if (ht_has_key(users, username)) {
@@ -21,7 +21,7 @@ void AddUser(hashtable_t *users, char *argv[]) {
 	}
 
 	user_t *user = malloc(sizeof(user_t));
-	DIE (user == NULL, "user malloc");
+	DIE(user == NULL, "user malloc");
 
 	user->points = USER_DEFAULT_POINTS;
 	user->status = 0;
@@ -29,11 +29,12 @@ void AddUser(hashtable_t *users, char *argv[]) {
 	memcpy(user->username, username, strlen(username) + 1);
 
 	ht_put(users, username, strlen(username) + 1, user, sizeof(user_t));
+
+	free(user);
 }
 
-
-void Borrow(hashtable_t *users, hashtable_t *library, char *argv[]) {
-	
+void Borrow(hashtable_t *users, hashtable_t *library, char *argv[])
+{
 	char *username = argv[0];
 	char *bookname = argv[1];
 	// transform the command's first argument string to integer
@@ -41,7 +42,7 @@ void Borrow(hashtable_t *users, hashtable_t *library, char *argv[]) {
 	int days_available = strtol(argv[2], &endptr, 10);
 
 	// check if the provided value was not a number
-	DIE (argv[2] == endptr || *endptr != '\0', "wrong days_available value");
+	DIE(argv[2] == endptr || *endptr != '\0', "wrong days_available value");
 
 	if (!ht_has_key(users, username)) {
 		printf("You are not registered yet.\n");
@@ -55,20 +56,20 @@ void Borrow(hashtable_t *users, hashtable_t *library, char *argv[]) {
 		return;
 	}
 
+	if (user->status == 1) {
+		printf("You have already borrowed a book.\n");
+		return;
+	}
+
+	book_t *book = (book_t *)ht_get(library, bookname);
+
 	if (!ht_has_key(library, bookname)) {
 		printf("The book is not in the library.\n");
 		return;
 	}
 
-	book_t *book = (book_t*)ht_get(library, bookname);
-
 	if (book->status == 1) {
 		printf("The book is borrowed.\n");
-		return;
-	}
-
-	if (user->status == 1) {
-		printf("You have already borrowed a book.\n");
 		return;
 	}
 
@@ -76,11 +77,10 @@ void Borrow(hashtable_t *users, hashtable_t *library, char *argv[]) {
 	user->days_available = days_available;
 	memcpy(user->borrowed_book, bookname, BOOKNAME_LEN);
 	book->status = 1;
-	
 }
 
-void Return(hashtable_t *users, hashtable_t *library, char *argv[]) {
-
+void Return(hashtable_t *users, hashtable_t *library, char *argv[])
+{
 	char *username = argv[0];
 	char *bookname = argv[1];
 
@@ -88,16 +88,15 @@ void Return(hashtable_t *users, hashtable_t *library, char *argv[]) {
 	char *endptr;
 	int days_since_borrow = strtol(argv[2], &endptr, 10);
 	// check if the provided value was not a number
-	DIE (argv[2] == endptr || *endptr != '\0', "wrong days_since_borrow value");
+	DIE(argv[2] == endptr || *endptr != '\0', "wrong days_since_borrow value");
 
 	int rating = strtol(argv[3], &endptr, 10);
 	// check if the provided value was not a number
-	DIE (argv[3] == endptr || *endptr != '\0', "wrong rating value");
-
+	DIE(argv[3] == endptr || *endptr != '\0', "wrong rating value");
 
 	user_t *user = (user_t *)ht_get(users, username);
 
-	book_t *book = (book_t*)ht_get(library, bookname);
+	book_t *book = (book_t *)ht_get(library, bookname);
 
 	if (user->status == 2) {
 		printf("You are banned from this library.\n");
@@ -123,12 +122,12 @@ void Return(hashtable_t *users, hashtable_t *library, char *argv[]) {
 		user->status = 0;
 	} else {
 		user->status = 2;
-		printf("The user %s has been banned.\n", username);
+		printf("The user %s has been banned from this library.\n", username);
 	}
 }
 
-void Lost(hashtable_t *users, hashtable_t *library, char *argv[]) {
-
+void Lost(hashtable_t *users, hashtable_t *library, char *argv[])
+{
 	char *username = argv[0];
 	char *bookname = argv[1];
 
@@ -141,8 +140,11 @@ void Lost(hashtable_t *users, hashtable_t *library, char *argv[]) {
 
 	if (user->status == 2) {
 		printf("You are banned from this library.\n");
+		return;
 	}
 
+	book_t *book = (book_t *)ht_get(library, bookname);
+	ht_free(book->content);
 	ht_remove_entry(library, bookname);
 
 	user->points -= 50;
@@ -151,8 +153,6 @@ void Lost(hashtable_t *users, hashtable_t *library, char *argv[]) {
 		user->status = 0;
 	} else {
 		user->status = 2;
-		printf("The user %s has been banned.\n", username);
+		printf("The user %s has been banned from this library.\n", username);
 	}
 }
-
-

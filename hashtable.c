@@ -1,11 +1,12 @@
+// Copyright Ionescu Matei-Stefan - 313CAb - 2021-2022
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "hashtable.h"
+#include "linkedlist.h"
 #include "types.h"
 #include "utils.h"
-#include "linkedlist.h"
 
 #define MAX_STRING_SIZE 256
 #define HMAX 10
@@ -57,7 +58,7 @@ unsigned int hash_function_string(void *a)
 	 * Credits: http://www.cse.yorku.ca/~oz/hash.html
 	 */
 	unsigned char *puchar_a = (unsigned char *)a;
-	unsigned long hash = 5381;
+	unsigned int hash = 5381;
 	int c;
 
 	while ((c = *puchar_a++))
@@ -155,17 +156,28 @@ void ht_put(hashtable_t *ht, void *key, unsigned int key_size, void *value,
 	void *p = ht_get(ht, key);
 
 	if (p) {
-		memcpy(p, value, value_size);
-		return;
+		ht_remove_entry(ht, key);
 	}
 
 	unsigned int index = ht->hash_function(key) % HMAX;
 
 	info *node_data = malloc(sizeof(info));
+	if (!node_data) {
+		printf("Memory allocation failed.\n");
+		exit(-1);
+	}
 	node_data->key = malloc(key_size);
+	if (!node_data->key) {
+		printf("Memory allocation failed.\n");
+		exit(-1);
+	}
 	node_data->value = malloc(value_size);
-	memcpy(node_data->key, key, key_size);
-	memcpy(node_data->value, value, value_size);
+	if (!node_data->value) {
+		printf("Memory allocation failed.\n");
+		exit(-1);
+	}
+	memmove(node_data->key, key, key_size);
+	memmove(node_data->value, value, value_size);
 
 	ll_add_nth_node(ht->buckets[index], ht->buckets[index]->size + 1,
 					node_data);
